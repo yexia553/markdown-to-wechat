@@ -1,0 +1,15 @@
+origi.html
+result.html
+blog-source
+code2img
+cache.txt
+*.log
+update.sh
+cache.bin
+ob
+ob-pub
+node_modules
+venv/
+.vscode/
+myNotes/
+__pycache__/
