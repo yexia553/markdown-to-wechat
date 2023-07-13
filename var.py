@@ -1,11 +1,14 @@
 import os
 
-
 CONTENT_SOURCE_URL = "https://panzhixiang.cn"  # 文章原地址，比如自己的博客网站
 AUTHOR = "潘智祥"  # 希望显示在公众号文章中的作者名字
 IMAGE_PATH = "../myNotes/images"  # markdown中引用的图片的路径
-MARKDOWN_PATH = ["../myNotes/essays", "../myNotes/invest",
-                 "../myNotes/tech", "../myNotes/tourism"]  # markdown文件的路径
+MARKDOWN_PATH = [
+    "../myNotes/essays",
+    "../myNotes/invest",
+    "../myNotes/tech",
+    "../myNotes/tourism",
+]  # markdown文件的路径
 FOOTER = '''
 <div>
     <br />

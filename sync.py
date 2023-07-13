@@ -1,26 +1,24 @@
-from datetime import datetime
-from datetime import timedelta
-from pyquery import PyQuery
-from datetime import timedelta
-import time
-import html
-import urllib
-import markdown
-from markdown.extensions import codehilite
-import os
 import hashlib
-import pickle
-from pathlib import Path
-from werobot import WeRoBot
-import requests
+import html
 import json
-import urllib.request
+import logging
+import os
+import pickle
 import random
 import string
-import logging
+import time
+import urllib
+import urllib.request
+from datetime import datetime, timedelta
+from pathlib import Path
+
+import markdown
+import requests
+from markdown.extensions import codehilite
+from pyquery import PyQuery
+from werobot import WeRoBot
 
 import var
-
 
 logging.basicConfig(
     format="%(asctime)s %(levelname)-8s %(message)s",
@@ -420,7 +418,7 @@ if __name__ == '__main__':
     init_cache()
     start_time = time.time()  # 开始时间
     for x in date_range(
-        datetime.now() - timedelta(days=30), datetime.now() + timedelta(days=2)
+        datetime.now() - timedelta(days=10), datetime.now() + timedelta(days=2)
     ):
         # 设置同步时间范围
         string_date = x.strftime('%Y-%m-%d')
