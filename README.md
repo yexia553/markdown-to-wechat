@@ -20,8 +20,13 @@ pip3 install -r requirements.txt
     ```python
     CONTENT_SOURCE_URL = "https://panzhixiang.cn"  # 文章原地址，比如自己的博客网站
     AUTHOR = "潘智祥"  # 希望显示在公众号文章中的作者名字
-    IMAGE_PATH = "./myNotes/images"  # markdown中引用的图片的路径
-    MARKDOWN_PATH = ["./myNotes/"]  # markdown文件的路径，可以传入多个路径
+    IMAGE_PATH = "/home/zhixiang_pan/learningspace/myNotes"  # markdown中引用的图片的路径
+    MARKDOWN_PATH = [
+        "/home/zhixiang_pan/learningspace/myNotes/essays",
+        "/home/zhixiang_pan/learningspace/myNotes/invest",
+        "/home/zhixiang_pan/learningspace/myNotes/tech",
+        "/home/zhixiang_pan/learningspace/myNotes/tourism",
+    ]  # markdown文件的路径
     FOOTER = '''
     <div>
         <br />
@@ -34,6 +39,7 @@ pip3 install -r requirements.txt
     WECHAT_APP_ID = os.environ.get('WECHAT_APP_ID', '')
     ```
     需要根据自己的实际情况进行修改  
+    **IMAGE_PATH和MARKDOWN_PATH要想绝对路径，不要使用相对路径，这样避免不必要的报错**
 
 2. 设置同步时间范围
     这个工具是同步一定时间范围内的博客到公众号，代码如下：

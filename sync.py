@@ -150,7 +150,9 @@ def get_images_from_markdown(content):
     for line in lines:
         line = line.strip()
         if line.startswith('![') and line.endswith(')'):
-            image = line.split('(')[1].split(')')[0].strip()
+            image = (
+                line.split('(')[1].split(')')[0].strip()[2:]
+            )  # 最后的[9:]的作用是去掉前面的../images
             images.append(image)
     return images
 
@@ -341,7 +343,7 @@ def upload_media_news(post_path):
         if image.startswith("http"):
             media_id, media_url = upload_image(image)
         else:
-            media_id, media_url = upload_image_from_path("./myNotes/images" + image)
+            media_id, media_url = upload_image_from_path(var.IMAGE_PATH + image)
         if media_id != None:
             uploaded_images[image] = [media_id, media_url]
 
@@ -418,7 +420,7 @@ if __name__ == '__main__':
     init_cache()
     start_time = time.time()  # 开始时间
     for x in date_range(
-        datetime.now() - timedelta(days=10), datetime.now() + timedelta(days=2)
+        datetime.now() - timedelta(days=604), datetime.now() + timedelta(days=2)
     ):
         # 设置同步时间范围
         string_date = x.strftime('%Y-%m-%d')
