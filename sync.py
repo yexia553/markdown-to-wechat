@@ -26,23 +26,6 @@ logging.basicConfig(
     datefmt="%Y-%m-%d %H:%M:%S",
 )
 
-CACHE = {}
-CACHE_STORE = "cache.bin"
-
-
-def dump_cache():
-    fp = open(CACHE_STORE, "wb")
-    pickle.dump(CACHE, fp)
-
-
-def init_cache():
-    global CACHE
-    if os.path.exists(CACHE_STORE):
-        fp = open(CACHE_STORE, "rb")
-        CACHE = pickle.load(fp)
-        return
-    dump_cache()
-
 
 class NewClient:
     def __init__(self):
@@ -75,41 +58,12 @@ def Client():
     return client, token
 
 
-def cache_get(key):
-    if key in CACHE:
-        return CACHE[key]
-    return None
-
-
-def file_digest(file_path):
-    """
-    计算文件的md5值
-    """
-    md5 = hashlib.md5()
-    with open(file_path, 'rb') as f:
-        md5.update(f.read())
-    return md5.hexdigest()
-
-
-def cache_update(file_path):
-    digest = file_digest(file_path)
-    CACHE[digest] = "{}:{}".format(file_path, datetime.now())
-    dump_cache()
-
-
-def file_processed(file_path):
-    digest = file_digest(file_path)
-    return cache_get(digest) != None
-
-
 def upload_image_from_path(image_path):
     """
     从本地上传图片到微信公众号
     """
-    image_digest = file_digest(image_path)
-    res = cache_get(image_digest)
-    if res != None:
-        return res[0], res[1]
+    if "images" in image_path:
+        image_path = var.IMAGE_PATH + image_path.split("images")[-1]
     client, _ = Client()
     logging.info("正在上传 {}".format(image_path))
     try:
@@ -118,8 +72,6 @@ def upload_image_from_path(image_path):
         )  ##永久素材
         media_id = media_json['media_id']
         media_url = media_json['url']
-        CACHE[image_digest] = [media_id, media_url]
-        dump_cache()
         logging.info("file: {} => media_id: {}".format(image_path, media_id))
         return media_id, media_url
     except Exception as e:
@@ -150,9 +102,7 @@ def get_images_from_markdown(content):
     for line in lines:
         line = line.strip()
         if line.startswith('![') and line.endswith(')'):
-            image = (
-                line.split('(')[1].split(')')[0].strip()[2:]
-            )  # 最后的[9:]的作用是去掉前面的../images
+            image = line.split('(')[1].split(')')[0].strip()
             images.append(image)
     return images
 
@@ -330,6 +280,7 @@ def upload_media_news(post_path):
     gen_cover = fetch_attr(content, 'gen_cover').strip('"')  # 是否自动生成封面图片
     images = get_images_from_markdown(content)
     logging.info(f"博客标题是：{TITLE}")
+
     if len(images) == 0 or gen_cover == "true":
         # 原文章中没有图片或者gen_cover属性为true时，自动生成一张图片
         letters = string.ascii_lowercase
@@ -385,13 +336,11 @@ def upload_media_news(post_path):
     resp = json.loads(r.text)
     logging.info(resp)
     media_id = resp['media_id']
-    cache_update(post_path)
     return resp
 
 
 def run(string_date):
     logging.info(string_date)
-
     MARKDOWN_PATH = var.MARKDOWN_PATH
     for item in MARKDOWN_PATH:
         path_list = Path(item).glob('**/*.md')
@@ -400,10 +349,6 @@ def run(string_date):
             content = open(path_str, 'r').read()
             date = fetch_attr(content, 'date').strip()
             if string_date in date:
-                if file_processed(path_str):
-                    # 通过MD5有没有修改来判断文章是否被处理过
-                    logging.info("{} has been processed".format(path_str))
-                    continue
                 logging.info(path_str)
                 news_json = upload_media_news(path_str)
                 logging.info(news_json)
@@ -417,10 +362,9 @@ def date_range(start_date, end_date):
 
 if __name__ == '__main__':
     logging.info("begin sync to wechat")
-    init_cache()
     start_time = time.time()  # 开始时间
     for x in date_range(
-        datetime.now() - timedelta(days=604), datetime.now() + timedelta(days=2)
+        datetime.now() - timedelta(days=1), datetime.now() + timedelta(days=1)
     ):
         # 设置同步时间范围
         string_date = x.strftime('%Y-%m-%d')
